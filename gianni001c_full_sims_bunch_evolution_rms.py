@@ -1,0 +1,85 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+import glob
+
+from scipy.signal import savgol_filter
+
+import os,sys
+BIN = os.path.expanduser("./tools/")
+sys.path.append(BIN)
+
+import myfilemanager as mfm
+import propsort as ps
+import mystyle as ms
+
+from scipy.constants import c as ccc
+
+# Chromaticity no damper
+folders_compare = [
+    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
+i_start_list = [700, 4000]
+
+# Chromaticity with damper
+folders_compare = [
+    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
+i_start_list = [700, 5000]
+
+# Damper ON/OFF (Qp = 0)
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_0.0',
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0']
+i_start_list = [3000, 5000]
+
+# Damper ON/OFF (Qp = 2.5)
+labels = ['Feedback %s'%ff for ff in ['ON', 'OFF']]
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_2.5',
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5']
+
+# # Octupole scan
+# labels = '-6 -3.0 -1.5 0.0 1.5 3.0 6'.split()
+# folders_compare = [
+#     ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%s_Qp_xy_0.0'%oo).replace('-', 'minus') for oo in labels]
+# i_start_list = [0,0,0,0,0,0,0]
+# i_start_list = None
+
+plt.close('all')
+
+fig1 = plt.figure(1)
+ax11 = fig1.add_subplot(3,1,1)
+ax12 = fig1.add_subplot(3,1,2, sharex=ax11)
+ax13 = fig1.add_subplot(3,1,3, sharex=ax11)
+
+for ifol, folder in enumerate(folders_compare):
+
+    folder_curr_sim = folder
+    sim_curr_list = ps.sort_properly(glob.glob(folder_curr_sim+'/bunch_evolution_*.h5'))
+    ob = mfm.monitorh5list_to_obj(sim_curr_list)
+
+    sim_curr_list_slice_ev = ps.sort_properly(glob.glob(folder_curr_sim+'/slice_evolution_*.h5'))
+    ob_slice = mfm.monitorh5list_to_obj(sim_curr_list_slice_ev, key='Slices', flag_transpose=True)
+
+    w_slices = ob_slice.n_macroparticles_per_slice
+    wx = ob_slice.mean_x * w_slices
+    rms_x = np.sqrt(np.mean((ob_slice.mean_x * w_slices)**2, axis=0))
+    mask_zero = ob.epsn_x > 0.
+
+    ax11.plot(ob.mean_x[mask_zero]*1e3, label=labels[ifol])
+    ax12.plot(ob.epsn_x[mask_zero]*1e6)
+    ax13.plot(rms_x[mask_zero])
+
+    ax11.legend()
+
+    if i_start_list is not None:
+        i_start = i_start_list[ifol]
+        fig10 = plt.figure(10+ifol)
+        for i_trace in range(i_start, i_start+15):
+            wx_trace_filtered = savgol_filter(wx[:,i_trace], 11, 3)
+            mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
+            plt.plot(ob_slice.mean_z[mask_filled, i_trace], wx_trace_filtered[mask_filled])
+
+for ax in [ax11, ax12, ax13]:
+    ax.grid(True)
+
+plt.show()
