@@ -18,24 +18,39 @@ from scipy.constants import c as ccc
 # Chromaticity no damper
 folders_compare = [
     ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
-i_start_list = [700, 4000]
 
 # Chromaticity with damper
+qp_list = [0, 2.5, 5, 7.5, 10., 12.5, 15.]
+labels = ['%.1f'%qqpp for qqpp in qp_list]
 folders_compare = [
-    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
-i_start_list = [700, 5000]
+    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in qp_list]
+i_start_list = [0] * len(qp_list)
+fname = 'wrongQp_effect_with_damper'
 
-# Damper ON/OFF (Qp = 0)
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_0.0',
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0']
-i_start_list = [3000, 5000]
 
-# Damper ON/OFF (Qp = 2.5)
-labels = ['Feedback %s'%ff for ff in ['ON', 'OFF']]
+qp_list = [0, 2.5, 5]#, 7.5, 10., 12.5, 15.]
+labels = ['%.1f'%qqpp for qqpp in qp_list]
 folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_2.5',
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5']
+    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qqpp) for qqpp in qp_list]
+i_start_list = [0] * len(qp_list)
+fname = 'Qp_effect_with_damper'
+
+## Damper ON/OFF (Qp = 0)
+#labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
+#folders_compare = [
+#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_0.0',
+#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0']
+#i_start_list = [700, 700]
+#fname = 'ADT_effect_Qp0'
+
+
+## Damper ON/OFF (Qp = 2.5)
+#labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
+#folders_compare = [
+#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_2.5',
+#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5']
+#i_start_list = [3000, 5000]
+#fname = 'ADT_effect_Qp2.5'
 
 # # Octupole scan
 # labels = '-6 -3.0 -1.5 0.0 1.5 3.0 6'.split()
@@ -44,14 +59,23 @@ folders_compare = [
 # i_start_list = [0,0,0,0,0,0,0]
 # i_start_list = None
 
+## Low/high intensity
+#labels = ['2.3e11 p/b', '1.2e11 p/b']
+#folders_compare = [
+#        '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_%.1fe11ppb_VRF_3MV'%vv for vv in [2.3, 1.2]]
+#i_start_list = None
+#fname = 'intensity_effect'
+
 plt.close('all')
 
-fig1 = plt.figure(1)
+fig1 = plt.figure(1, figsize=(8/1.3,6*1.5/1.3))
 ax11 = fig1.add_subplot(3,1,1)
 ax12 = fig1.add_subplot(3,1,2, sharex=ax11)
 ax13 = fig1.add_subplot(3,1,3, sharex=ax11)
 
 for ifol, folder in enumerate(folders_compare):
+
+    print('Folder %d/%d'%(ifol, len(folders_compare)))
 
     folder_curr_sim = folder
     sim_curr_list = ps.sort_properly(glob.glob(folder_curr_sim+'/bunch_evolution_*.h5'))
@@ -67,9 +91,8 @@ for ifol, folder in enumerate(folders_compare):
 
     ax11.plot(ob.mean_x[mask_zero]*1e3, label=labels[ifol])
     ax12.plot(ob.epsn_x[mask_zero]*1e6)
-    ax13.plot(rms_x[mask_zero])
+    ax13.plot(savgol_filter(rms_x[mask_zero], 21, 3))
 
-    ax11.legend()
 
     if i_start_list is not None:
         i_start = i_start_list[ifol]
@@ -80,6 +103,14 @@ for ifol, folder in enumerate(folders_compare):
             plt.plot(ob_slice.mean_z[mask_filled, i_trace], wx_trace_filtered[mask_filled])
 
 for ax in [ax11, ax12, ax13]:
-    ax.grid(True)
+    ax.grid(True, linestyle='--', alpha=0.5)
+
+ax13.set_xlabel('Turn')
+ax13.set_ylabel('Intrabunch activity')
+ax12.set_ylabel('Transverse emittance [um]')
+ax11.set_ylabel('Transverse position [mm]')
+
+leg = ax11.legend(prop={'size':10})
+fig1.savefig(fname+'.png', dpi=200)
 
 plt.show()

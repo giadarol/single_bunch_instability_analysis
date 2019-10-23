@@ -20,6 +20,38 @@ N_prev = 20
 # Damper ON
 label = 'Qp2.5_ADT_ON'
 folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5'
+i_start = 0
+i_end = 6000
+
+
+# label = 'Qp0_ADT_ON'
+# folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0'
+# i_start = 0
+# i_end = 1000
+
+# Q'=12.5
+label = 'Qp12.5_ADT_ON'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_12.5'
+i_start = 0
+i_end = 8000
+
+# Q'= 0.
+label = 'Qp0.0_ADT_ON'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_0.0'
+i_start = 0
+i_end = 430
+
+# Q'= 5.
+label = 'Qp5.0_ADT_ON'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_5.0'
+i_start = 0
+i_end = 2200
+
+# Q'= 2.5
+label = 'Qp2.5_ADT_ON'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_2.5'
+i_start = 0
+i_end = 670
 
 plt.close('all')
 
@@ -34,7 +66,7 @@ wx_filtered = savgol_filter(wx, 21, 3, axis=0)
 
 fig = plt.figure(1)
 
-for i_turn in xrange(2000, 5000):
+for i_turn in xrange(i_start, i_end):
     fig.clf()
     ax = fig.add_subplot(111)
     for ii, i_trace in enumerate(range(i_turn-N_prev, i_turn)):
@@ -50,6 +82,13 @@ for i_turn in xrange(2000, 5000):
     ax.set_ylabel('Position [mm]')
     ax.set_ylim(-1.5,1.5)
     fig.suptitle('Turn %d'%i_turn)
-    fig.savefig('frame_%05d.png'%i_turn, dpi=180)
+    fig.savefig(label + 'frame_%05d.png'%i_turn, dpi=180)
+
+command = ' '.join([
+        'ffmpeg',
+         '-i %s'%(label + 'frame_%05d.png'),
+         '-c:v libx264 -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2,setpts=3*PTS"',
+        '-profile:v high -level:v 4.0 -pix_fmt yuv420p -crf 22 -codec:a aac %s.mp4'%label])
+os.system(command)
 
 plt.show()
