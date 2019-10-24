@@ -66,6 +66,12 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = None
 #fname = 'intensity_effect'
 
+labels = ['test']
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_5MV']
+i_start_list = [750]
+fname = None
+
 plt.close('all')
 
 fig1 = plt.figure(1, figsize=(8/1.3,6*1.5/1.3))
@@ -111,6 +117,7 @@ ax12.set_ylabel('Transverse emittance [um]')
 ax11.set_ylabel('Transverse position [mm]')
 
 leg = ax11.legend(prop={'size':10})
-fig1.savefig(fname+'.png', dpi=200)
+if fname is not None:
+    fig1.savefig(fname+'.png', dpi=200)
 
 plt.show()
