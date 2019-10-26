@@ -169,8 +169,6 @@ n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
 axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
 axffts.set_ylim(0, 5)
 
-
-
 # I try a double fft
 figfft2 = plt.figure(303)
 axfft2 = figfft2.add_subplot(111)
@@ -179,9 +177,23 @@ q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1])
 axfft2.pcolormesh(q_axis_fft2,
         n_osc_axis, np.abs(fft2))
 axfft2.set_ylabel('N. oscillations in 4 sigmaz')
-
 axfft2.set_ylim(0, 5)
 axfft2.set_xlim(0.25, .30)
+
+# Plot time evolution of most unstable "mode"
+i_mode = np.argmax(
+        np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :-50]), axis=1)\
+      - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
+fig1mode = plt.figure(304)
+ax1mode = fig1mode.add_subplot(111)
+ax1mode.plot(np.real(ffts[i_mode, :]), label = 'cos comp.')
+ax1mode.plot(np.imag(ffts[i_mode, :]), alpha=0.5, label='sin comp.')
+ax1mode.legend(loc='best')
+# These are the sin and cos components
+# (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
+# r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
+# 2r cos - 2 i sin
+
 plt.show()
 
 
