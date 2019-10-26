@@ -160,26 +160,28 @@ mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
     s=1)
 plt.colorbar(mpbl)
 
+L_zframe = np.max(ob_slice.mean_z[:, 0]) - np.min(ob_slice.mean_z[:, 0]) 
 # I try some FFT on the slice motion
 figffts = plt.figure(302)
 axffts = figffts.add_subplot(111)
-ffts = np.fft.rfft(wx, axis=0) 
-axffts.pcolormesh(np.abs(ffts))
-axffts.set_ylim(0, 10)
+ffts = np.fft.fft(wx, axis=0) 
+n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
+axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
+axffts.set_ylim(0, 5)
 
 
 
 # I try a double fft
-L_zframe = np.max(ob_slice.mean_z[:, 0]) - np.min(ob_slice.mean_z[:, 0]) 
-
 figfft2 = plt.figure(303)
 axfft2 = figfft2.add_subplot(111)
-fft2 = np.fft.rfft2(wx) 
-axfft2.pcolormesh(np.fft.rfftfreq(wx.shape[1]),
-        np.arange(fft2.shape[0])*4*ob.sigma_z[0]/L_zframe, np.abs(fft2))
-axfft2.set_ylim(0, 5)
+fft2 = np.fft.fft(ffts, axis=1) 
+q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1]) 
+axfft2.pcolormesh(q_axis_fft2,
+        n_osc_axis, np.abs(fft2))
 axfft2.set_ylabel('N. oscillations in 4 sigmaz')
 
+axfft2.set_ylim(0, 5)
+axfft2.set_xlim(0.25, .30)
 plt.show()
 
 
