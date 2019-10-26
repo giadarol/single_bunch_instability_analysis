@@ -123,14 +123,14 @@ if fname is not None:
 import sys
 sys.path.append('./NAFFlib')
 
+# I Try a global fft
 figfft = plt.figure(300)
 axfft = figfft.add_subplot(111)
-
-
 fftx = np.fft.rfft(ob.mean_x[mask_zero])
 qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
 axfft.semilogy(qax, np.abs(fftx))
 
+# I try some NAFF on the centroid
 import NAFFlib as nl
 
 n_wind = 100
@@ -157,7 +157,14 @@ axnaff = fignaff.add_subplot(111)
 
 mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
     y=np.array(freq_list), c=(np.array(ampl_list)), vmax=1*np.max(ampl_list),
-    
     s=1)
 plt.colorbar(mpbl)
+
+# I try some FFT on the slice motion
+figffts = plt.figure(302)
+axffts = figffts.add_subplot(111)
+ffts = np.fft.rfft(wx, axis=0) 
+axffts.pcolormesh(np.abs(ffts))
 plt.show()
+
+
