@@ -68,8 +68,8 @@ fname = 'Qp_effect_with_damper'
 
 labels = ['test']
 folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_5MV']
-i_start_list = [750]
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_2.3e11ppb_VRF_5MV']
+i_start_list = [17500]
 fname = None
 
 plt.close('all')
@@ -104,7 +104,7 @@ for ifol, folder in enumerate(folders_compare):
         i_start = i_start_list[ifol]
         fig10 = plt.figure(10+ifol)
         for i_trace in range(i_start, i_start+15):
-            wx_trace_filtered = savgol_filter(wx[:,i_trace], 11, 3)
+            wx_trace_filtered = savgol_filter(wx[:,i_trace], 51, 3)
             mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
             plt.plot(ob_slice.mean_z[mask_filled, i_trace], wx_trace_filtered[mask_filled])
 
@@ -120,4 +120,43 @@ leg = ax11.legend(prop={'size':10})
 if fname is not None:
     fig1.savefig(fname+'.png', dpi=200)
 
+import sys
+sys.path.append('./NAFFlib')
+
+figfft = plt.figure(300)
+axfft = figfft.add_subplot(111)
+
+
+fftx = np.fft.rfft(ob.mean_x[mask_zero])
+qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
+axfft.semilogy(qax, np.abs(fftx))
+
+import NAFFlib as nl
+
+n_wind = 100
+N_lines = 10
+freq_list = []
+ampl_list = []
+
+x_vect = ob.mean_x[mask_zero]
+N_samples = len(x_vect)
+
+for ii in range(N_samples):
+    if ii < n_wind/2:
+        continue
+    if ii > N_samples-n_wind/2:
+        continue
+
+    freq, a1, a2 = nl.get_tunes(
+            x_vect[ii-n_wind/2 : ii+n_wind/2], N_lines)
+    freq_list.append(freq)
+    ampl_list.append(np.abs(a1))
+
+fignaff = plt.figure(301)
+axnaff = fignaff.add_subplot(111)
+
+mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
+    y=np.array(freq_list), c=(np.array(ampl_list)), vmax=0.001*np.max(ampl_list),
+    s=1)
+plt.colorbar(mpbl)
 plt.show()
