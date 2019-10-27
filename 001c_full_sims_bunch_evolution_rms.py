@@ -69,7 +69,8 @@ fname = 'Qp_effect_with_damper'
 labels = ['test']
 folders_compare = [
     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_2.3e11ppb_VRF_5MV']
-i_start_list = [17500]
+'../ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_5MV']
+i_start_list = [750]
 fname = None
 
 plt.close('all')
@@ -123,17 +124,30 @@ if fname is not None:
 import sys
 sys.path.append('./NAFFlib')
 
+<<<<<<< HEAD
 figfft = plt.figure(300)
 axfft = figfft.add_subplot(111)
 
 
+=======
+# I Try a global fft
+figfft = plt.figure(300)
+axfft = figfft.add_subplot(111)
+>>>>>>> c4373d695896f8293a14819b5ab3eb7b87e59343
 fftx = np.fft.rfft(ob.mean_x[mask_zero])
 qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
 axfft.semilogy(qax, np.abs(fftx))
 
+<<<<<<< HEAD
 import NAFFlib as nl
 
 n_wind = 100
+=======
+# I try some NAFF on the centroid
+import NAFFlib as nl
+
+n_wind = 500
+>>>>>>> c4373d695896f8293a14819b5ab3eb7b87e59343
 N_lines = 10
 freq_list = []
 ampl_list = []
@@ -156,7 +170,50 @@ fignaff = plt.figure(301)
 axnaff = fignaff.add_subplot(111)
 
 mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
+<<<<<<< HEAD
     y=np.array(freq_list), c=(np.array(ampl_list)), vmax=0.001*np.max(ampl_list),
     s=1)
 plt.colorbar(mpbl)
+=======
+    y=np.array(freq_list), c=(np.array(ampl_list)), vmax=1*np.max(ampl_list),
+    s=1)
+plt.colorbar(mpbl)
+
+L_zframe = np.max(ob_slice.mean_z[:, 0]) - np.min(ob_slice.mean_z[:, 0]) 
+# I try some FFT on the slice motion
+figffts = plt.figure(302)
+axffts = figffts.add_subplot(111)
+ffts = np.fft.fft(wx, axis=0) 
+n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
+axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
+axffts.set_ylim(0, 5)
+
+# I try a double fft
+figfft2 = plt.figure(303)
+axfft2 = figfft2.add_subplot(111)
+fft2 = np.fft.fft(ffts, axis=1) 
+q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1]) 
+axfft2.pcolormesh(q_axis_fft2,
+        n_osc_axis, np.abs(fft2))
+axfft2.set_ylabel('N. oscillations in 4 sigmaz')
+axfft2.set_ylim(0, 5)
+axfft2.set_xlim(0.25, .30)
+
+# Plot time evolution of most unstable "mode"
+i_mode = np.argmax(
+        np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :-50]), axis=1)\
+      - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
+fig1mode = plt.figure(304)
+ax1mode = fig1mode.add_subplot(111)
+ax1mode.plot(np.real(ffts[i_mode, :]), label = 'cos comp.')
+ax1mode.plot(np.imag(ffts[i_mode, :]), alpha=0.5, label='sin comp.')
+ax1mode.legend(loc='best')
+# These are the sin and cos components
+# (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
+# r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
+# 2r cos - 2 i sin
+
+>>>>>>> c4373d695896f8293a14819b5ab3eb7b87e59343
 plt.show()
+
+
