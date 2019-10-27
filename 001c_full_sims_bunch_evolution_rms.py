@@ -133,7 +133,7 @@ axfft.semilogy(qax, np.abs(fftx))
 # I try some NAFF on the centroid
 import NAFFlib as nl
 
-n_wind = 100
+n_wind = 500
 N_lines = 10
 freq_list = []
 ampl_list = []
