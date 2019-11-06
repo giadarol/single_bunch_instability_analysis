@@ -66,9 +66,25 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = None
 #fname = 'intensity_effect'
 
-labels = ['test']
+labels = ['SEY 1.4 inj']
 folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_8MV']
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_6MV']
+fname = None
+i_start_list = None
+
+labels = ['FLATTOP']
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_007/convergence_studies_arcQuad_Tb_slices/convergence_wrt_slices_250_750_1000_blocked_grid_only_x/simulations_PyPARIS/transverse_grid_Tblocked_betaxy_100m_length0.16_slices_750/']
+fname = None
+i_start_list = None
+
+
+# label = 'SEY 1.3 inj'
+# folders_compare = [
+#  '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_6MV']
+# fname = None
+# i_start_list = None
+
 #i_start_list = [750]
 i_start_list = None
 fname = None
