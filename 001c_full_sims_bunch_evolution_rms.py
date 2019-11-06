@@ -15,6 +15,8 @@ import mystyle as ms
 
 from scipy.constants import c as ccc
 
+flag_naff = False
+
 # Chromaticity no damper
 folders_compare = [
     ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
@@ -72,12 +74,17 @@ folders_compare = [
 fname = None
 i_start_list = None
 
-labels = ['FLATTOP']
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_007/convergence_studies_arcQuad_Tb_slices/convergence_wrt_slices_250_750_1000_blocked_grid_only_x/simulations_PyPARIS/transverse_grid_Tblocked_betaxy_100m_length0.16_slices_750/']
-fname = None
-i_start_list = None
+# labels = ['SEY 1.4 inj nokick']
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_intensity_1.2e11ppb_VRF_3_8MV_no_initial_kick/simulations_PyPARIS/ArcQuad_no_initial_kick_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_7MV/']
+# fname = None
+# i_start_list = None
 
+# labels = ['FLATTOP']
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_007/convergence_studies_arcQuad_Tb_slices/convergence_wrt_slices_250_750_1000_blocked_grid_only_x/simulations_PyPARIS/transverse_grid_Tblocked_betaxy_100m_length0.16_slices_750/']
+# fname = None
+# i_start_list = None
 
 # label = 'SEY 1.3 inj'
 # folders_compare = [
@@ -125,6 +132,94 @@ for ifol, folder in enumerate(folders_compare):
             mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
             plt.plot(ob_slice.mean_z[mask_filled, i_trace], wx_trace_filtered[mask_filled])
 
+    import sys
+    sys.path.append('./NAFFlib')
+
+    # I Try a global fft
+    figfft = plt.figure(300)
+    axfft = figfft.add_subplot(111)
+    figffts = plt.figure(302)
+    axffts = figffts.add_subplot(111)
+    figfft2 = plt.figure(303)
+    axfft2 = figfft2.add_subplot(111)
+    fig1mode = plt.figure(304)
+    ax1mode = fig1mode.add_subplot(111)
+
+    fftx = np.fft.rfft(ob.mean_x[mask_zero])
+    qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
+    axfft.semilogy(qax, np.abs(fftx))
+
+    # I try some NAFF on the centroid
+    import NAFFlib as nl
+    if flag_naff:
+
+        n_wind = 50
+        N_lines = 10
+        freq_list = []
+        ampl_list = []
+
+        x_vect = ob.mean_x[mask_zero]
+        N_samples = len(x_vect)
+
+        for ii in range(N_samples):
+            if ii < n_wind/2:
+                continue
+            if ii > N_samples-n_wind/2:
+                continue
+
+            freq, a1, a2 = nl.get_tunes(
+                    x_vect[ii-n_wind/2 : ii+n_wind/2], N_lines)
+            freq_list.append(freq)
+            ampl_list.append(np.abs(a1))
+
+        fignaff = plt.figure(301)
+        axnaff = fignaff.add_subplot(111)
+
+        mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
+            y=np.array(freq_list), c=(np.array(ampl_list)),
+            vmax=1*np.max(ampl_list),
+            s=1)
+        plt.colorbar(mpbl)
+
+    # Details
+    L_zframe = np.max(ob_slice.mean_z[:, 0]) - np.min(ob_slice.mean_z[:, 0])
+    # I try some FFT on the slice motion
+    ffts = np.fft.fft(wx, axis=0)
+    n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
+    axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
+    axffts.set_ylim(0, 5)
+
+    # I try a double fft
+    fft2 = np.fft.fft(ffts, axis=1)
+    q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1])
+    axfft2.pcolormesh(q_axis_fft2,
+            n_osc_axis, np.abs(fft2))
+    axfft2.set_ylabel('N. oscillations in 4 sigmaz')
+    axfft2.set_ylim(0, 5)
+    axfft2.set_xlim(0.25, .30)
+
+    # Plot time evolution of most unstable "mode"
+    i_mode = np.argmax(
+            np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :-50]), axis=1)\
+          - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
+    ax1mode.plot(np.real(ffts[i_mode, :]), label = 'cos comp.')
+    ax1mode.plot(np.imag(ffts[i_mode, :]), alpha=0.5, label='sin comp.')
+    ax1mode.legend(loc='best')
+
+    tune_centroid = nl.get_tune(ob.mean_x[mask_zero])
+    tune_1mode_re = nl.get_tune(np.real(ffts[i_mode, :]))
+    tune_1mode_im = nl.get_tune(np.imag(ffts[i_mode, :]))
+
+    plt.suptitle(
+        'Tune centroid: %.5f\n'%tune_centroid +\
+        'Tune mode (cos): %.5f (%.2fe-3) '%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
+        'Tune mode (sin) :%.5f (%.2fe-3) '%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid) )
+
+    # These are the sin and cos components
+    # (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
+    # r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
+    # 2r cos - 2 i sin
+
 for ax in [ax11, ax12, ax13]:
     ax.grid(True, linestyle='--', alpha=0.5)
 
@@ -137,91 +232,4 @@ leg = ax11.legend(prop={'size':10})
 if fname is not None:
     fig1.savefig(fname+'.png', dpi=200)
 
-import sys
-sys.path.append('./NAFFlib')
-
-# I Try a global fft
-figfft = plt.figure(300)
-axfft = figfft.add_subplot(111)
-fftx = np.fft.rfft(ob.mean_x[mask_zero])
-qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
-axfft.semilogy(qax, np.abs(fftx))
-
-# I try some NAFF on the centroid
-import NAFFlib as nl
-
-n_wind = 50
-N_lines = 10
-freq_list = []
-ampl_list = []
-
-x_vect = ob.mean_x[mask_zero]
-N_samples = len(x_vect)
-
-for ii in range(N_samples):
-    if ii < n_wind/2:
-        continue
-    if ii > N_samples-n_wind/2:
-        continue
-
-    freq, a1, a2 = nl.get_tunes(
-            x_vect[ii-n_wind/2 : ii+n_wind/2], N_lines)
-    freq_list.append(freq)
-    ampl_list.append(np.abs(a1))
-
-fignaff = plt.figure(301)
-axnaff = fignaff.add_subplot(111)
-
-mpbl = axnaff.scatter(x=np.array(N_lines*[np.arange(len(freq_list))]).T,
-    y=np.array(freq_list), c=(np.array(ampl_list)),
-    vmax=1*np.max(ampl_list),
-    s=1)
-plt.colorbar(mpbl)
-
-L_zframe = np.max(ob_slice.mean_z[:, 0]) - np.min(ob_slice.mean_z[:, 0]) 
-# I try some FFT on the slice motion
-figffts = plt.figure(302)
-axffts = figffts.add_subplot(111)
-ffts = np.fft.fft(wx, axis=0) 
-n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
-axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
-axffts.set_ylim(0, 5)
-
-# I try a double fft
-figfft2 = plt.figure(303)
-axfft2 = figfft2.add_subplot(111)
-fft2 = np.fft.fft(ffts, axis=1) 
-q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1]) 
-axfft2.pcolormesh(q_axis_fft2,
-        n_osc_axis, np.abs(fft2))
-axfft2.set_ylabel('N. oscillations in 4 sigmaz')
-axfft2.set_ylim(0, 5)
-axfft2.set_xlim(0.25, .30)
-
-# Plot time evolution of most unstable "mode"
-i_mode = np.argmax(
-        np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :-50]), axis=1)\
-      - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
-fig1mode = plt.figure(304)
-ax1mode = fig1mode.add_subplot(111)
-ax1mode.plot(np.real(ffts[i_mode, :]), label = 'cos comp.')
-ax1mode.plot(np.imag(ffts[i_mode, :]), alpha=0.5, label='sin comp.')
-ax1mode.legend(loc='best')
-
-tune_centroid = nl.get_tune(ob.mean_x[mask_zero])
-tune_1mode_re = nl.get_tune(np.real(ffts[i_mode, :]))
-tune_1mode_im = nl.get_tune(np.imag(ffts[i_mode, :]))
-
-plt.suptitle(
-    'Tune centroid: %.5f\n'%tune_centroid +\
-    'Tune mode (cos): %.5f (%.2fe-3) '%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
-    'Tune mode (sin) :%.5f (%.2fe-3) '%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid) )
-
-# These are the sin and cos components
-# (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
-# r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
-# 2r cos - 2 i sin
-
 plt.show()
-
-
