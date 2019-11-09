@@ -54,13 +54,6 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = [3000, 5000]
 #fname = 'ADT_effect_Qp2.5'
 
-# # Octupole scan
-# labels = '-6 -3.0 -1.5 0.0 1.5 3.0 6'.split()
-# folders_compare = [
-#     ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%s_Qp_xy_0.0'%oo).replace('-', 'minus') for oo in labels]
-# i_start_list = [0,0,0,0,0,0,0]
-# i_start_list = None
-
 ## Low/high intensity
 #labels = ['2.3e11 p/b', '1.2e11 p/b']
 #folders_compare = [
@@ -68,9 +61,10 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = None
 #fname = 'intensity_effect'
 
-labels = ['SEY 1.4 inj']
+VRF_array = np.arange(3, 8.1, 1)
+labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_6MV']
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
 fname = None
 i_start_list = None
 
@@ -92,7 +86,12 @@ i_start_list = None
 # fname = None
 # i_start_list = None
 
-#i_start_list = [750]
+
+# Octupole scan
+Qp_array = np.arange(0., 12.55, 2.5)[:2]
+labels = ["Q'=%.1f"%qp for qp in Qp_array]
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qp for qp in Qp_array]
 i_start_list = None
 fname = None
 
@@ -115,7 +114,7 @@ for ifol, folder in enumerate(folders_compare):
     ob_slice = mfm.monitorh5list_to_obj(sim_curr_list_slice_ev, key='Slices', flag_transpose=True)
 
     w_slices = ob_slice.n_macroparticles_per_slice
-    wx = ob_slice.mean_x * w_slices
+    wx = ob_slice.mean_x * w_slices / np.mean(w_slices)
     rms_x = np.sqrt(np.mean((ob_slice.mean_x * w_slices)**2, axis=0))
     mask_zero = ob.epsn_x > 0.
 
@@ -135,19 +134,29 @@ for ifol, folder in enumerate(folders_compare):
     import sys
     sys.path.append('./NAFFlib')
 
-    # I Try a global fft
     figfft = plt.figure(300)
     axfft = figfft.add_subplot(111)
-    figffts = plt.figure(302)
-    axffts = figffts.add_subplot(111)
-    figfft2 = plt.figure(303)
-    axfft2 = figfft2.add_subplot(111)
-    fig1mode = plt.figure(304)
-    ax1mode = fig1mode.add_subplot(111)
+
+    figffts = plt.figure(3000 + ifol, figsize=(1.5*6.4, 1.3*4.8))
+    axffts = figffts.add_subplot(2,2,1)
+    #figfft2 = plt.figure(303)
+    axfft2 = figffts.add_subplot(2,2,2, sharey=axffts)
+    #fig1mode = plt.figure(304)
+    axcentroid = figffts.add_subplot(2,2,3, sharex=axffts)
+    ax1mode = figffts.add_subplot(2,2,4, sharex=axcentroid)
+
+    ax1mode.set_xlim(0, np.sum(mask_zero))
+
+    figffts.subplots_adjust(top=0.835,
+            bottom=0.11,
+            left=0.11,
+            right=0.95,
+            hspace=0.205,
+            wspace=0.28)
 
     fftx = np.fft.rfft(ob.mean_x[mask_zero])
     qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
-    axfft.semilogy(qax, np.abs(fftx))
+    axfft.semilogy(qax, np.abs(fftx), label=labels[ifol])
 
     # I try some NAFF on the centroid
     import NAFFlib as nl
@@ -188,6 +197,8 @@ for ifol, folder in enumerate(folders_compare):
     n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
     axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
     axffts.set_ylim(0, 5)
+    axffts.set_ylabel('N. oscillations in 4 sigmaz')
+    axffts.set_xlabel('Turn')
 
     # I try a double fft
     fft2 = np.fft.fft(ffts, axis=1)
@@ -197,30 +208,39 @@ for ifol, folder in enumerate(folders_compare):
     axfft2.set_ylabel('N. oscillations in 4 sigmaz')
     axfft2.set_ylim(0, 5)
     axfft2.set_xlim(0.25, .30)
+    axffts.set_xlabel('Tune')
+
+    axcentroid.plot(ob.mean_x[mask_zero]*1000)
+    axcentroid.set_xlabel('Turn')
+    axcentroid.set_ylabel('Centroid position [mm]')
+    axcentroid.grid(True, linestyle='--', alpha=0.5)
 
     # Plot time evolution of most unstable "mode"
     i_mode = np.argmax(
             np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :-50]), axis=1)\
           - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
-    ax1mode.plot(np.real(ffts[i_mode, :]), label = 'cos comp.')
-    ax1mode.plot(np.imag(ffts[i_mode, :]), alpha=0.5, label='sin comp.')
+    ax1mode.plot(np.real(ffts[i_mode, :][mask_zero]), label = 'cos comp.')
+    ax1mode.plot(np.imag(ffts[i_mode, :][mask_zero]), alpha=0.5, label='sin comp.')
     ax1mode.legend(loc='best')
+    ax1mode.set_xlabel('Turn')
+    ax1mode.set_ylabel('Transverse signal [a.u.]')
+    ax1mode.grid(True, linestyle='--', alpha=0.5)
 
     tune_centroid = nl.get_tune(ob.mean_x[mask_zero])
     tune_1mode_re = nl.get_tune(np.real(ffts[i_mode, :]))
     tune_1mode_im = nl.get_tune(np.imag(ffts[i_mode, :]))
 
-    plt.suptitle(
-        'Tune centroid: %.5f\n'%tune_centroid +\
-        'Tune mode (cos): %.5f (%.2fe-3) '%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
-        'Tune mode (sin) :%.5f (%.2fe-3) '%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid) )
+    plt.suptitle(labels[ifol]+\
+        '\nTune centroid: %.5f\n'%tune_centroid +\
+        'Tune mode (cos): %.5f (%.2fe-3)\n'%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
+        'Tune mode (sin) :%.5f (%.2fe-3)'%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid) )
 
     # These are the sin and cos components
     # (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
     # r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
     # 2r cos - 2 i sin
 
-for ax in [ax11, ax12, ax13]:
+for ax in [ax11, ax12, ax13, axfft]:
     ax.grid(True, linestyle='--', alpha=0.5)
 
 ax13.set_xlabel('Turn')
@@ -229,6 +249,7 @@ ax12.set_ylabel('Transverse emittance [um]')
 ax11.set_ylabel('Transverse position [mm]')
 
 leg = ax11.legend(prop={'size':10})
+legfft = axfft.legend(prop={'size':10})
 if fname is not None:
     fig1.savefig(fname+'.png', dpi=200)
 
