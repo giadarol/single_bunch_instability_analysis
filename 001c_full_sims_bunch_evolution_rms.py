@@ -122,37 +122,57 @@ for ifol, folder in enumerate(folders_compare):
     ax12.plot(ob.epsn_x[mask_zero]*1e6)
     ax13.plot(savgol_filter(rms_x[mask_zero], 21, 3))
 
-
-    if i_start_list is not None:
-        i_start = i_start_list[ifol]
-        fig10 = plt.figure(10+ifol)
-        for i_trace in range(i_start, i_start+15):
-            wx_trace_filtered = savgol_filter(wx[:,i_trace], 51, 3)
-            mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
-            plt.plot(ob_slice.mean_z[mask_filled, i_trace], wx_trace_filtered[mask_filled])
-
     import sys
     sys.path.append('./NAFFlib')
 
     figfft = plt.figure(300)
     axfft = figfft.add_subplot(111)
 
-    figffts = plt.figure(3000 + ifol, figsize=(1.5*6.4, 1.3*4.8))
-    axffts = figffts.add_subplot(2,2,1)
-    #figfft2 = plt.figure(303)
-    axfft2 = figffts.add_subplot(2,2,2, sharey=axffts)
-    #fig1mode = plt.figure(304)
-    axcentroid = figffts.add_subplot(2,2,3, sharex=axffts)
-    ax1mode = figffts.add_subplot(2,2,4, sharex=axcentroid)
+    figffts = plt.figure(3000 + ifol, figsize=(1.7*6.4, 1.8*4.8))
+    plt.rcParams.update({'font.size': 12})
 
-    ax1mode.set_xlim(0, np.sum(mask_zero))
+    # axffts = figffts.add_subplot(3,2,1)
+    # axfft2 = figffts.add_subplot(3,2,2, sharey=axffts)
+    # axcentroid = figffts.add_subplot(3,2,3, sharex=axffts)
+    # ax1mode = figffts.add_subplot(3,2,4, sharex=axcentroid)
+    # axtraces = figffts.add_subplot(3,2,5)
+    # axtext = figffts.add_subplot(3,2,6)
 
-    figffts.subplots_adjust(top=0.835,
-            bottom=0.11,
-            left=0.11,
-            right=0.95,
-            hspace=0.205,
-            wspace=0.28)
+    #axffts = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(0,0), rowspan=2)
+    #axfft2 = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(0,1), rowspan=2)
+    #axcentroid = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(2,0), rowspan=1)
+    #ax1mode = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(2,1), rowspan=1)
+    #axtraces = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(3,0), rowspan=2)
+    #axtext = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(3,1), rowspan=2)
+
+    axwidth = .38
+    pos_col1 = 0.1
+    pos_col2 = 0.57
+    pos_row1 = 0.63
+    height_row1 = 0.3
+    pos_row2 = 0.37
+    height_row2 = 0.18
+    pos_row3 = 0.07
+    height_row3 = 0.22
+
+    axffts = figffts.add_axes((pos_col1, pos_row1, axwidth, height_row1))
+    axfft2 = figffts.add_axes((pos_col2, pos_row1, axwidth, height_row1), sharey=axffts)
+    axcentroid = figffts.add_axes((pos_col1, pos_row2, axwidth, height_row2),
+            sharex=axffts)
+    ax1mode = figffts.add_axes((pos_col2, pos_row2, axwidth, height_row2),
+            sharex=axcentroid)
+    axtraces = figffts.add_axes((pos_col1, pos_row3, axwidth, height_row3))
+    axtext = figffts.add_axes((pos_col2, pos_row3, axwidth, height_row3))
+
+    #axtraces = plt.subplot2grid(fig=figffts, shape=(3,4), loc=(2,1), colspan=2)
+
+    figffts.subplots_adjust(
+        top=0.925,
+        bottom=0.07,
+        left=0.11,
+        right=0.95,
+        hspace=0.3,
+        wspace=0.28)
 
     fftx = np.fft.rfft(ob.mean_x[mask_zero])
     qax = np.fft.rfftfreq(len(ob.mean_x[mask_zero]))
@@ -197,7 +217,7 @@ for ifol, folder in enumerate(folders_compare):
     n_osc_axis = np.arange(ffts.shape[0])*4*ob.sigma_z[0]/L_zframe
     axffts.pcolormesh(np.arange(wx.shape[1]), n_osc_axis, np.abs(ffts))
     axffts.set_ylim(0, 5)
-    axffts.set_ylabel('N. oscillations in 4 sigmaz')
+    axffts.set_ylabel('N. oscillations\nin 4 sigmaz')
     axffts.set_xlabel('Turn')
 
     # I try a double fft
@@ -205,15 +225,16 @@ for ifol, folder in enumerate(folders_compare):
     q_axis_fft2 = np.arange(0, 1., 1./wx.shape[1])
     axfft2.pcolormesh(q_axis_fft2,
             n_osc_axis, np.abs(fft2))
-    axfft2.set_ylabel('N. oscillations in 4 sigmaz')
+    axfft2.set_ylabel('N. oscillations\nin 4 sigmaz')
     axfft2.set_ylim(0, 5)
     axfft2.set_xlim(0.25, .30)
-    axffts.set_xlabel('Tune')
+    axfft2.set_xlabel('Tune')
 
     axcentroid.plot(ob.mean_x[mask_zero]*1000)
     axcentroid.set_xlabel('Turn')
     axcentroid.set_ylabel('Centroid position [mm]')
     axcentroid.grid(True, linestyle='--', alpha=0.5)
+    axcentroid.ticklabel_format(style='sci', scilimits=(0, 0), axis='y')
 
     # Plot time evolution of most unstable "mode"
     i_mode = np.argmax(
@@ -221,20 +242,39 @@ for ifol, folder in enumerate(folders_compare):
           - np.max(np.abs(ffts[:ffts.shape[0]//2, mask_zero][:, :50]), axis=1))
     ax1mode.plot(np.real(ffts[i_mode, :][mask_zero]), label = 'cos comp.')
     ax1mode.plot(np.imag(ffts[i_mode, :][mask_zero]), alpha=0.5, label='sin comp.')
-    ax1mode.legend(loc='best')
+    ax1mode.legend(loc='best', prop={'size':12})
     ax1mode.set_xlabel('Turn')
-    ax1mode.set_ylabel('Transverse signal [a.u.]')
+    ax1mode.set_ylabel('Most unstable mode')
     ax1mode.grid(True, linestyle='--', alpha=0.5)
+    ax1mode.ticklabel_format(style='sci', scilimits=(0, 0), axis='y')
+    ax1mode.set_xlim(0, np.sum(mask_zero))
+
+    for ax in [axcentroid, ax1mode]:
+        ax.set_ylim(np.array([-1, 1])*np.max(np.abs(np.array(ax.get_ylim()))))
 
     tune_centroid = nl.get_tune(ob.mean_x[mask_zero])
     tune_1mode_re = nl.get_tune(np.real(ffts[i_mode, :]))
     tune_1mode_im = nl.get_tune(np.imag(ffts[i_mode, :]))
 
-    plt.suptitle(labels[ifol]+\
+    N_traces = 15
+    i_start = np.sum(mask_zero) - 2*N_traces
+    for i_trace in range(i_start, i_start+15):
+        wx_trace_filtered = savgol_filter(wx[:,i_trace], 51, 3)
+        mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
+        axtraces.plot(ob_slice.mean_z[mask_filled, i_trace],
+                    wx_trace_filtered[mask_filled])
+
+    axtraces.ticklabel_format(style='sci', scilimits=(0, 0), axis='y')
+    axtraces.grid(True, linestyle='--', alpha=0.5)
+    axtraces.set_xlabel("z [m]")
+    axtraces.set_ylabel("P.U. signal")
+    plt.suptitle(labels[ifol])
+    axtext.text(0.5, 0.5,
         '\nTune centroid: %.5f\n'%tune_centroid +\
         'Tune mode (cos): %.5f (%.2fe-3)\n'%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
-        'Tune mode (sin) :%.5f (%.2fe-3)'%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid) )
-
+        'Tune mode (sin): %.5f (%.2fe-3)'%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid),
+        size=12, ha='center', va='center')
+    axtext.axis('off')
     # These are the sin and cos components
     # (r+ji)(cos + j sin) + (r-ji)(cos - j sin)=
     # r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
