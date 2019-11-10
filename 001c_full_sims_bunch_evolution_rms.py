@@ -1,3 +1,8 @@
+import os,sys
+sys.path.append("tools")
+sys.path.append("PyHEADTAIL")
+
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
@@ -5,9 +10,7 @@ import glob
 
 from scipy.signal import savgol_filter
 
-import os,sys
-BIN = os.path.expanduser("./tools/")
-sys.path.append(BIN)
+from PyPARIS_sim_class import LHC_custom
 
 import myfilemanager as mfm
 import propsort as ps
@@ -87,13 +90,29 @@ i_start_list = None
 # i_start_list = None
 
 
-# Octupole scan
-Qp_array = np.arange(0., 12.55, 2.5)[:2]
-labels = ["Q'=%.1f"%qp for qp in Qp_array]
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qp for qp in Qp_array]
-i_start_list = None
-fname = None
+# # Q' scan
+# Qp_array = np.arange(0., 12.55, 2.5)[-2:]
+# labels = ["Q'=%.1f"%qp for qp in Qp_array]
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qp for qp in Qp_array]
+# i_start_list = None
+# fname = None
+
+
+def extract_info_from_sim_param(fname):
+    with open(fname, 'r') as fid:
+        lines = fid.readlines()
+
+    ddd = {}
+    # Extract V_RF
+    for ll in lines:
+        if '=' in ll:
+            nn = ll.split('=')[0].replace(' ','')
+            try:
+                ddd[nn] = eval(ll.split('=')[-1])
+            except:
+                ddd[nn] = 'Failed!'
+    return ddd
 
 plt.close('all')
 
@@ -113,6 +132,8 @@ for ifol, folder in enumerate(folders_compare):
     sim_curr_list_slice_ev = ps.sort_properly(glob.glob(folder_curr_sim+'/slice_evolution_*.h5'))
     ob_slice = mfm.monitorh5list_to_obj(sim_curr_list_slice_ev, key='Slices', flag_transpose=True)
 
+    pars = extract_info_from_sim_param(folder+'/Simulation_parameters.py')
+
     w_slices = ob_slice.n_macroparticles_per_slice
     wx = ob_slice.mean_x * w_slices / np.mean(w_slices)
     rms_x = np.sqrt(np.mean((ob_slice.mean_x * w_slices)**2, axis=0))
@@ -130,20 +151,6 @@ for ifol, folder in enumerate(folders_compare):
 
     figffts = plt.figure(3000 + ifol, figsize=(1.7*6.4, 1.8*4.8))
     plt.rcParams.update({'font.size': 12})
-
-    # axffts = figffts.add_subplot(3,2,1)
-    # axfft2 = figffts.add_subplot(3,2,2, sharey=axffts)
-    # axcentroid = figffts.add_subplot(3,2,3, sharex=axffts)
-    # ax1mode = figffts.add_subplot(3,2,4, sharex=axcentroid)
-    # axtraces = figffts.add_subplot(3,2,5)
-    # axtext = figffts.add_subplot(3,2,6)
-
-    #axffts = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(0,0), rowspan=2)
-    #axfft2 = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(0,1), rowspan=2)
-    #axcentroid = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(2,0), rowspan=1)
-    #ax1mode = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(2,1), rowspan=1)
-    #axtraces = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(3,0), rowspan=2)
-    #axtext = plt.subplot2grid(fig=figffts, shape=(5,2), loc=(3,1), rowspan=2)
 
     axwidth = .38
     pos_col1 = 0.1
@@ -269,10 +276,28 @@ for ifol, folder in enumerate(folders_compare):
     axtraces.set_xlabel("z [m]")
     axtraces.set_ylabel("P.U. signal")
     plt.suptitle(labels[ifol])
+
+    # Get Qx Qs
+    machine = LHC_custom.LHC(
+              n_segments=1,
+              machine_configuration=pars['machine_configuration'],
+              beta_x=pars['beta_x'], beta_y=pars['beta_y'],
+              accQ_x=pars['Q_x'], accQ_y=pars['Q_y'],
+              Qp_x=pars['Qp_x'], Qp_y=pars['Qp_y'],
+              octupole_knob=pars['octupole_knob'],
+              optics_dict=None,
+              V_RF=pars['V_RF']
+              )
+    Qs = machine.longitudinal_map.Q_s
+    Qx = machine.transverse_map.accQ_x
+    frac_qx, _ = math.modf(Qx)
+
     axtext.text(0.5, 0.5,
-        '\nTune centroid: %.5f\n'%tune_centroid +\
-        'Tune mode (cos): %.5f (%.2fe-3)\n'%(tune_1mode_re, 1e3*tune_1mode_re-1e3*tune_centroid) +\
-        'Tune mode (sin): %.5f (%.2fe-3)'%(tune_1mode_im, 1e3*tune_1mode_im-1e3*tune_centroid),
+            'Tune machine: %.4f'%frac_qx +\
+            '\nSynchrotron tune: %.3fe-3 (V_RF: %.1f MV)'%(Qs*1e3, pars['V_RF']*1e-6) +\
+        '\nTune centroid: %.4f (%.2fe-3)\n'%(tune_centroid, 1e3*tune_centroid-frac_qx*1e3)+\
+        'Tune mode (cos): %.4f (%.2fe-3)\n'%(tune_1mode_re, 1e3*tune_1mode_re-1e3*frac_qx) +\
+        'Tune mode (sin): %.4f (%.2fe-3)'%(tune_1mode_im, 1e3*tune_1mode_im-1e3*frac_qx),
         size=12, ha='center', va='center')
     axtext.axis('off')
     # These are the sin and cos components
