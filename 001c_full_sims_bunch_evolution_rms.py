@@ -64,7 +64,7 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = None
 #fname = 'intensity_effect'
 
-VRF_array = np.arange(3, 8.1, 1)
+VRF_array = np.arange(3, 8.1, 1)[:2]
 labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
@@ -141,7 +141,8 @@ for ifol, folder in enumerate(folders_compare):
 
     ax11.plot(ob.mean_x[mask_zero]*1e3, label=labels[ifol])
     ax12.plot(ob.epsn_x[mask_zero]*1e6)
-    ax13.plot(savgol_filter(rms_x[mask_zero], 21, 3))
+    intrabunch_activity = savgol_filter(rms_x[mask_zero], 21, 3)
+    ax13.plot(intrabunch_activity)
 
     import sys
     sys.path.append('./NAFFlib')
@@ -264,9 +265,11 @@ for ifol, folder in enumerate(folders_compare):
     tune_1mode_im = nl.get_tune(np.imag(ffts[i_mode, :]))
 
     N_traces = 15
-    i_start = np.sum(mask_zero) - 2*N_traces
+    max_intr = np.max(intrabunch_activity)
+    i_start = np.where(intrabunch_activity<0.3*max_intr)[0][-1] - N_traces
+    # i_start = np.sum(mask_zero) - 2*N_traces
     for i_trace in range(i_start, i_start+15):
-        wx_trace_filtered = savgol_filter(wx[:,i_trace], 51, 3)
+        wx_trace_filtered = savgol_filter(wx[:,i_trace], 31, 3)
         mask_filled = ob_slice.n_macroparticles_per_slice[:,i_trace]>0
         axtraces.plot(ob_slice.mean_z[mask_filled, i_trace],
                     wx_trace_filtered[mask_filled])
@@ -275,6 +278,10 @@ for ifol, folder in enumerate(folders_compare):
     axtraces.grid(True, linestyle='--', alpha=0.5)
     axtraces.set_xlabel("z [m]")
     axtraces.set_ylabel("P.U. signal")
+    axtraces.text(0.02, 0.02, 'Turns:\n%d - %d'%(i_start,
+                i_start+N_traces-1),
+            transform=axtraces.transAxes, ha='left', va='bottom')
+
     plt.suptitle(labels[ifol])
 
     # Get Qx Qs
