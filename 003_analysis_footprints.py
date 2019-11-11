@@ -13,7 +13,7 @@ import myfilemanager as mfm
 
 from PyPARIS_sim_class import LHC_custom
 
-folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_minus6_Qp_xy_0.0_FP'
 
 
 def extract_info_from_sim_param(fname):
@@ -58,31 +58,34 @@ betay = machine.transverse_map.beta_y[0]
 Jy = (ob.y_init**2 + (ob.yp_init*betay)**2)/(2*betay)
 Jx = (ob.x_init**2 + (ob.xp_init*betax)**2)/(2*betax)
 
-Qx_min = frac_qx - frac_qx * 0.03
-Qy_min = frac_qy - frac_qy * 0.03
-Qx_max_cut = frac_qx + frac_qx * 0.1
-Qy_max_cut = frac_qy + frac_qx * 0.1
+Qx_min = frac_qx -  0.03
+Qy_min = frac_qy -  0.03
+Qx_max_cut = frac_qx + 0.05
+Qy_max_cut = frac_qy + 0.05
 
 plt.close('all')
 
 fig1 = plt.figure(1, figsize=(6.4*1.1, 4.8*1.4))
 ax1 = fig1.add_subplot(111)
-s1 = ax1.scatter(np.abs(ob.qx_i), np.abs(ob.qy_i),
+mpbl1 = ax1.scatter(np.abs(ob.qx_i), np.abs(ob.qy_i),
         c =ob.z_init*1e2, marker='.', edgecolors='none', vmin=-32, vmax=32)
 ax1.plot([frac_qx], [frac_qy], '*k', markersize=10)
 ax1.set_xlabel('Q$_x$')
 ax1.set_ylabel('Q$_y$')
-ax1.set_xlim([Qx_min, Qx_max_cut])
 ax1.set_aspect(aspect='equal', adjustable='datalim')
+ax1.set(xlim=(Qx_min, Qx_max_cut), ylim=(Qy_min, Qy_max_cut))
 ax1.grid(True, linestyle='--', alpha=0.5)
-divider = make_axes_locatable(ax1)
-axHistx = divider.append_axes("top", size=1.2, pad=0.25, sharex=ax1)
 
+divider = make_axes_locatable(ax1)
+axhistx = divider.append_axes("top", size=1.2, pad=0.25, sharex=ax1)
+axcb = divider.append_axes("right", size=0.3, pad=0.1)
+axhistx.grid(True, linestyle='--', alpha=0.5)
 obstat = sm.nonparametric.KDEUnivariate(ob.qx_i)
 obstat.fit(bw=1e-3)
 q_axis = np.linspace(Qx_min, Qx_max_cut, 1000)
-axHistx.plot(q_axis, obstat.evaluate(q_axis))
+axhistx.plot(q_axis, obstat.evaluate(q_axis))
 
+plt.colorbar(mpbl1, cax=axcb)
 
 fig2 = plt.figure(2)
 ax2 = fig2.add_subplot(111)
