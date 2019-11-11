@@ -64,7 +64,7 @@ fname = 'Qp_effect_with_damper'
 #i_start_list = None
 #fname = 'intensity_effect'
 
-VRF_array = np.arange(3, 8.1, 1)[:2]
+VRF_array = np.arange(3, 8.1, 1)
 labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
