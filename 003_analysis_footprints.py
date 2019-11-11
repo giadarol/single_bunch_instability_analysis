@@ -6,12 +6,14 @@ import math
 
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+import statsmodels.api as sm
 
 import myfilemanager as mfm
 
 from PyPARIS_sim_class import LHC_custom
 
-folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_0.0_FP'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP'
 
 
 def extract_info_from_sim_param(fname):
@@ -63,7 +65,7 @@ Qy_max_cut = frac_qy + frac_qx * 0.1
 
 plt.close('all')
 
-fig1 = plt.figure(1)
+fig1 = plt.figure(1, figsize=(6.4*1.1, 4.8*1.4))
 ax1 = fig1.add_subplot(111)
 s1 = ax1.scatter(np.abs(ob.qx_i), np.abs(ob.qy_i),
         c =ob.z_init*1e2, marker='.', edgecolors='none', vmin=-32, vmax=32)
@@ -71,8 +73,15 @@ ax1.plot([frac_qx], [frac_qy], '*k', markersize=10)
 ax1.set_xlabel('Q$_x$')
 ax1.set_ylabel('Q$_y$')
 ax1.set_xlim([Qx_min, Qx_max_cut])
-ax1.set_ylim([Qy_min, Qy_max_cut])
-ax1.set_aspect(aspect=1, adjustable='box')
+ax1.set_aspect(aspect='equal', adjustable='datalim')
+ax1.grid(True, linestyle='--', alpha=0.5)
+divider = make_axes_locatable(ax1)
+axHistx = divider.append_axes("top", size=1.2, pad=0.25, sharex=ax1)
+
+obstat = sm.nonparametric.KDEUnivariate(ob.qx_i)
+obstat.fit(bw=1e-3)
+q_axis = np.linspace(Qx_min, Qx_max_cut, 1000)
+axHistx.plot(q_axis, obstat.evaluate(q_axis))
 
 
 fig2 = plt.figure(2)
