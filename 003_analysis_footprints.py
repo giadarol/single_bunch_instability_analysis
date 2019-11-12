@@ -13,6 +13,8 @@ import myfilemanager as mfm
 
 from PyPARIS_sim_class import LHC_custom
 
+fname_root = 'sey1.4_4MV_QP0_octscan'
+# fname_root = None
 octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
 folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
 for iff, ff in enumerate(folders): # some fixes
@@ -40,6 +42,7 @@ plt.rcParams.update({'font.size': 12})
 figglob = plt.figure(1)
 axglob = figglob.add_subplot(111)
 axdistrlist = []
+figfplist = []
 for ifol, folder in enumerate(folders):
     pars = extract_info_from_sim_param(folder+'/Simulation_parameters.py')
     machine = LHC_custom.LHC(
@@ -73,6 +76,8 @@ for ifol, folder in enumerate(folders):
     Qy_max_cut = frac_qy + 0.05
 
     fig1 = plt.figure(1000+ifol, figsize=(6.4*1.1, 4.8*1.4))
+    figfplist.append(fig1)
+
     ax1 = fig1.add_subplot(111)
     mpbl1 = ax1.scatter(np.abs(ob.qx_i), np.abs(ob.qy_i),
             c =ob.z_init*1e2, marker='.', edgecolors='none', vmin=-32, vmax=32)
@@ -94,6 +99,7 @@ for ifol, folder in enumerate(folders):
     axhistx.fill_between(x=q_axis, y1=0, y2=obstat.evaluate(q_axis), alpha=0.5)
     axglob.plot(q_axis, obstat.evaluate(q_axis),
             label='%.1f'%machine.i_octupole_focusing,
+            linewidth=2.,
             color=plt.cm.rainbow(float(ifol)/float(len(folders))))
     axdistrlist.append(axhistx)
     plt.colorbar(mpbl1, cax=axcb)
@@ -103,13 +109,20 @@ for ifol, folder in enumerate(folders):
     mpbl = ax2.scatter(ob.z_init*1e2,
             np.abs(ob.qx_i)-frac_qx, c =Jx,
             marker='.', edgecolors='none', vmin=0, vmax=8e-9)
-    plt.colorbar(mpbl)
+    cb = plt.colorbar(mpbl)
+    cb.ax.set_ylabel('Transverse action')
     ax2.set_xlim(-30, 30)
     ax2.set_ylim(-0.0, 3e-2)
     ax2.set_xlabel('z [cm]')
     ax2.set_ylabel('$\Delta$Qx', labelpad=5)
     ax2.grid(True, linestyle='--', alpha=0.5)
-
+    fig2.subplots_adjust(
+            top=0.88,
+            bottom=0.11,
+            left=0.155,
+            right=0.965,
+            hspace=0.2,
+            wspace=0.2)
     # sigma_x = np.sqrt(pars['epsn_x']*betax/machine.betagamma)
     # sigma_y = np.sqrt(pars['epsn_y']*betay/machine.betagamma)
     # mask_small_amplitude = np.sqrt(
@@ -119,14 +132,21 @@ for ifol, folder in enumerate(folders):
     # ax2.plot(z_small*1e2, qx_small - frac_qx, 'k.', markersize=10)
 
     for ff in [fig1, fig2]:
-        ff.suptitle(labels[ifol])
+        ff.suptitle(labels[ifol] + ' - I$_{LOF}$=%.1fA'%machine.i_octupole_focusing)
 
 axglob.legend(loc='best', title='I_LOF')
 axglob.grid(True, linestyle='--', alpha=0.5)
 axglob.set_ylim(bottom=0)
 axglob.set_ylabel('Density [a.u.]')
+axglob.set_xlabel('Q$_x$')
+
 for aa in axdistrlist:
     aa.set_ylim(axglob.get_ylim())
     aa.set_ylabel('Density [a.u.]')
+
+if fname_root is not None:
+    figglob.savefig(fname_root+'_spreads.png', dpi=200)
+    for ff, ll in zip(figfplist, labels):
+        ff.savefig(fname_root+'_'+ll.replace(' ', '_')+'.png', dpi=200)
 
 plt.show()
