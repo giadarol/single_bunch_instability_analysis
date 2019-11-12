@@ -18,77 +18,85 @@ import mystyle as ms
 
 from scipy.constants import c as ccc
 
-flag_naff = False
+########################################### Old stuff
+##### Chromaticity no damper
+####folders_compare = [
+####    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
 
-# Chromaticity no damper
+##### Chromaticity with damper
+####qp_list = [0, 2.5, 5, 7.5, 10., 12.5, 15.]
+####labels = ['%.1f'%qqpp for qqpp in qp_list]
+####folders_compare = [
+####    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in qp_list]
+####i_start_list = [0] * len(qp_list)
+####fname = 'wrongQp_effect_with_damper'
+
+
+####qp_list = [0, 2.5, 5]#, 7.5, 10., 12.5, 15.]
+####labels = ['%.1f'%qqpp for qqpp in qp_list]
+####folders_compare = [
+####    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qqpp) for qqpp in qp_list]
+####i_start_list = [0] * len(qp_list)
+####fname = 'Qp_effect_with_damper'
+
+##### Damper ON/OFF (Qp = 0)
+####labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
+####folders_compare = [
+####    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_0.0',
+####    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0']
+####i_start_list = [700, 700]
+####fname = 'ADT_effect_Qp0'
+
+
+##### Damper ON/OFF (Qp = 2.5)
+####labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
+####folders_compare = [
+####    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_2.5',
+####    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5']
+####i_start_list = [3000, 5000]
+####fname = 'ADT_effect_Qp2.5'
+
+###### Low/high intensity
+#####labels = ['2.3e11 p/b', '1.2e11 p/b']
+#####folders_compare = [
+#####        '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_%.1fe11ppb_VRF_3MV'%vv for vv in [2.3, 1.2]]
+#####i_start_list = None
+#####fname = 'intensity_effect'
+
+#### labels = ['SEY 1.4 inj nokick']
+#### folders_compare = [
+####     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_intensity_1.2e11ppb_VRF_3_8MV_no_initial_kick/simulations_PyPARIS/ArcQuad_no_initial_kick_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_7MV/']
+#### fname = None
+#### i_start_list = None
+###
+#### labels = ['FLATTOP']
+#### folders_compare = [
+####     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_007/convergence_studies_arcQuad_Tb_slices/convergence_wrt_slices_250_750_1000_blocked_grid_only_x/simulations_PyPARIS/transverse_grid_Tblocked_betaxy_100m_length0.16_slices_750/']
+#### fname = None
+#### i_start_list = None
+###
+#### label = 'SEY 1.3 inj'
+#### folders_compare = [
+####  '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_6MV']
+#### fname = None
+#### i_start_list = None
+########################################### end old stuff
+
+# Volvage scan SEY = 1.3
+VRF_array = np.arange(3, 8.1, 1)
+labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
-    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in [0, 2.5]]
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
+fname = None
+i_start_list = None
 
-# Chromaticity with damper
-qp_list = [0, 2.5, 5, 7.5, 10., 12.5, 15.]
-labels = ['%.1f'%qqpp for qqpp in qp_list]
-folders_compare = [
-    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_%.1f'%qqpp).replace('-', 'minus') for qqpp in qp_list]
-i_start_list = [0] * len(qp_list)
-fname = 'wrongQp_effect_with_damper'
-
-
-qp_list = [0, 2.5, 5]#, 7.5, 10., 12.5, 15.]
-labels = ['%.1f'%qqpp for qqpp in qp_list]
-folders_compare = [
-    ('/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qqpp) for qqpp in qp_list]
-i_start_list = [0] * len(qp_list)
-fname = 'Qp_effect_with_damper'
-
-## Damper ON/OFF (Qp = 0)
-#labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
-#folders_compare = [
-#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_0.0',
-#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_0.0']
-#i_start_list = [700, 700]
-#fname = 'ADT_effect_Qp0'
-
-
-## Damper ON/OFF (Qp = 2.5)
-#labels = ['Feedback %s'%ff for ff in ['OFF', 'ON']]
-#folders_compare = [
-#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_intensity_1.2e11ppb_Qp_xy_2.5',
-#    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_5e3_eMPs_500e3_damper_10turns_scan_chromaticity_minus2.5_20_intensity_1.2e11_2.3e11ppb/simulations_PyPARIS/Inj_ArcQuad_T0_x_slices_750_seg_8_MPslice_5e3_eMPs_250e3_length_7_VRF_4MV_damper_10turns_intensity_1.2e11ppb_Qp_xy_2.5']
-#i_start_list = [3000, 5000]
-#fname = 'ADT_effect_Qp2.5'
-
-## Low/high intensity
-#labels = ['2.3e11 p/b', '1.2e11 p/b']
-#folders_compare = [
-#        '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_%.1fe11ppb_VRF_3MV'%vv for vv in [2.3, 1.2]]
-#i_start_list = None
-#fname = 'intensity_effect'
-
+# Volvage scan SEY = 1.4
 VRF_array = np.arange(3, 8.1, 1)
 labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
 fname = None
 i_start_list = None
-
-# labels = ['SEY 1.4 inj nokick']
-# folders_compare = [
-#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_intensity_1.2e11ppb_VRF_3_8MV_no_initial_kick/simulations_PyPARIS/ArcQuad_no_initial_kick_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_7MV/']
-# fname = None
-# i_start_list = None
-
-# labels = ['FLATTOP']
-# folders_compare = [
-#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_007/convergence_studies_arcQuad_Tb_slices/convergence_wrt_slices_250_750_1000_blocked_grid_only_x/simulations_PyPARIS/transverse_grid_Tblocked_betaxy_100m_length0.16_slices_750/']
-# fname = None
-# i_start_list = None
-
-# label = 'SEY 1.3 inj'
-# folders_compare = [
-#  '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_6MV']
-# fname = None
-# i_start_list = None
-
 
 # # Q' scan
 # Qp_array = np.arange(0., 12.55, 2.5)[-2:]
@@ -98,6 +106,7 @@ i_start_list = None
 # i_start_list = None
 # fname = None
 
+flag_naff = False
 
 def extract_info_from_sim_param(fname):
     with open(fname, 'r') as fid:
