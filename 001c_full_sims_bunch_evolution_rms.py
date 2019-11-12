@@ -82,20 +82,20 @@ from scipy.constants import c as ccc
 #### i_start_list = None
 ########################################### end old stuff
 
-# Volvage scan SEY = 1.3
-VRF_array = np.arange(3, 8.1, 1)
-labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
-fname = None
-i_start_list = None
+# # Volvage scan SEY = 1.3
+# VRF_array = np.arange(3, 8.1, 1)
+# labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
+# fname = 'sey1.3_vscan'
+# i_start_list = None
 
 # Volvage scan SEY = 1.4
 VRF_array = np.arange(3, 8.1, 1)
-labels = ['SEY 1.4, %.1f MV'%vv for vv in VRF_array]
+labels = ['SEY 1.4 - %.1f MV'%vv for vv in VRF_array]
 folders_compare = [
     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
-fname = None
+fname = 'sey1.4_vscan'
 i_start_list = None
 
 # # Q' scan
@@ -108,8 +108,8 @@ i_start_list = None
 
 flag_naff = False
 
-def extract_info_from_sim_param(fname):
-    with open(fname, 'r') as fid:
+def extract_info_from_sim_param(spfname):
+    with open(spfname, 'r') as fid:
         lines = fid.readlines()
 
     ddd = {}
@@ -321,13 +321,25 @@ for ifol, folder in enumerate(folders_compare):
     # r cos + j r sin + ji cos - i sin | + r cos -j r sin -jicos -i sin = 
     # 2r cos - 2 i sin
 
+    if fname is not None:
+        figffts.savefig(fname+'_' + labels[ifol].replace(
+            ' ', '_').replace('=', '').replace('-_', '')+'.png', dpi=200)
+
 for ax in [ax11, ax12, ax13, axfft]:
     ax.grid(True, linestyle='--', alpha=0.5)
 
 ax13.set_xlabel('Turn')
-ax13.set_ylabel('Intrabunch activity')
-ax12.set_ylabel('Transverse emittance [um]')
-ax11.set_ylabel('Transverse position [mm]')
+ax13.set_ylabel('Intrabunch\nactivity')
+ax12.set_ylabel('Transverse\nemittance [um]')
+ax11.set_ylabel('Transverse\nposition [mm]')
+fig1.subplots_adjust(
+        top=0.88,
+        bottom=0.11,
+        left=0.18,
+        right=0.955,
+        hspace=0.2,
+        wspace=0.2)
+
 
 leg = ax11.legend(prop={'size':10})
 legfft = axfft.legend(prop={'size':10})
