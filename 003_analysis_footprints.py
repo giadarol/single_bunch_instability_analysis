@@ -19,7 +19,38 @@ octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
 folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
 for iff, ff in enumerate(folders): # some fixes
     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+leg_labels = None
 labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+
+fname_root = 'sey1.3_4MV_QP0_octscan'
+# fname_root = None
+octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
+folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
+for iff, ff in enumerate(folders): # some fixes
+    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+leg_labels = None
+labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+
+fname_root = 'sey0.0_4MV_QP0_octscan'
+# fname_root = None
+octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
+folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
+for iff, ff in enumerate(folders): # some fixes
+    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+leg_labels = None
+labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+
+
+# fname_root = 'compare_sey'
+# # fname_root = None
+# folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_6_Qp_xy_0.0_FP',
+# '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP',
+# '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP']
+# for iff, ff in enumerate(folders): # some fixes
+#     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+# leg_labels = ['No e-cloud', 'SEY 1.3', 'SEY 1.4']
+# labels = leg_labels
+
 
 def extract_info_from_sim_param(fname):
     with open(fname, 'r') as fid:
@@ -93,12 +124,16 @@ for ifol, folder in enumerate(folders):
     axcb = divider.append_axes("right", size=0.3, pad=0.1)
     axhistx.grid(True, linestyle='--', alpha=0.5)
     obstat = sm.nonparametric.KDEUnivariate(ob.qx_i)
-    obstat.fit(bw=1e-3)
+    obstat.fit(bw=5e-4)
     q_axis = np.linspace(Qx_min, Qx_max_cut, 1000)
     axhistx.plot(q_axis, obstat.evaluate(q_axis))
     axhistx.fill_between(x=q_axis, y1=0, y2=obstat.evaluate(q_axis), alpha=0.5)
+    if leg_labels is None:
+        lll ='%.1f'%machine.i_octupole_focusing
+    else:
+        lll = leg_labels[ifol]
     axglob.plot(q_axis, obstat.evaluate(q_axis),
-            label='%.1f'%machine.i_octupole_focusing,
+            label=lll,
             linewidth=2.,
             color=plt.cm.rainbow(float(ifol)/float(len(folders))))
     axdistrlist.append(axhistx)
@@ -134,7 +169,11 @@ for ifol, folder in enumerate(folders):
     for ff in [fig1, fig2]:
         ff.suptitle(labels[ifol] + ' - I$_{LOF}$=%.1fA'%machine.i_octupole_focusing)
 
-axglob.legend(loc='best', title='I_LOF')
+if leg_labels is None:
+    legtitle = 'I$_LOF$'
+else:
+    legtitle = None
+axglob.legend(loc='best', title=legtitle)
 axglob.grid(True, linestyle='--', alpha=0.5)
 axglob.set_ylim(bottom=0)
 axglob.set_ylabel('Density [a.u.]')
@@ -147,6 +186,6 @@ for aa in axdistrlist:
 if fname_root is not None:
     figglob.savefig(fname_root+'_spreads.png', dpi=200)
     for ff, ll in zip(figfplist, labels):
-        ff.savefig(fname_root+'_'+ll.replace(' ', '_')+'.png', dpi=200)
+        ff.savefig(fname_root+'_'+ll.replace(' ', '_').replace('_=', '')+'.png', dpi=200)
 
 plt.show()
