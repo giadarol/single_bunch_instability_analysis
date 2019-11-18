@@ -82,6 +82,14 @@ from scipy.constants import c as ccc
 #### i_start_list = None
 ########################################### end old stuff
 
+# One point for illustration
+VRF_array = [3]
+labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
+fname = 'sey1.3_3MV'
+i_start_list = None
+
 # # Volvage scan SEY = 1.3
 # VRF_array = np.arange(3, 8.1, 1)
 # labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
@@ -90,13 +98,13 @@ from scipy.constants import c as ccc
 # fname = 'sey1.3_vscan'
 # i_start_list = None
 
-# Volvage scan SEY = 1.4
-VRF_array = np.arange(3, 8.1, 1)
-labels = ['SEY 1.4 - %.1f MV'%vv for vv in VRF_array]
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
-fname = 'sey1.4_vscan'
-i_start_list = None
+# # Volvage scan SEY = 1.4
+# VRF_array = np.arange(3, 8.1, 1)
+# labels = ['SEY 1.4 - %.1f MV'%vv for vv in VRF_array]
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
+# fname = 'sey1.4_vscan'
+# i_start_list = None
 
 # # Q' scan
 # Qp_array = np.arange(0., 12.55, 2.5)[-2:]

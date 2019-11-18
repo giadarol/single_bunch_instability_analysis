@@ -21,36 +21,39 @@ for iff, ff in enumerate(folders): # some fixes
     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
 leg_labels = None
 labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+cmap = plt.cm.rainbow
 
-fname_root = 'sey1.3_4MV_QP0_octscan'
-# fname_root = None
-octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
-folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
-for iff, ff in enumerate(folders): # some fixes
-    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
-leg_labels = None
-labels = ['Koct = %.1f'%oo for oo in octknob_vect]
-
-fname_root = 'sey0.0_4MV_QP0_octscan'
-# fname_root = None
-octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
-folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
-for iff, ff in enumerate(folders): # some fixes
-    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
-leg_labels = None
-labels = ['Koct = %.1f'%oo for oo in octknob_vect]
-
-
-# fname_root = 'compare_sey'
+# fname_root = 'sey1.3_4MV_QP0_octscan'
 # # fname_root = None
-# folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_6_Qp_xy_0.0_FP',
-# '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP',
-# '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_6_Qp_xy_0.0_FP']
+# octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
+# folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
 # for iff, ff in enumerate(folders): # some fixes
 #     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
-# leg_labels = ['No e-cloud', 'SEY 1.3', 'SEY 1.4']
-# labels = leg_labels
+# leg_labels = None
+# labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+# cmap = plt.cm.rainbow
 
+# fname_root = 'sey0.0_4MV_QP0_octscan'
+# # fname_root = None
+# octknob_vect = [-6, -3, -1.5, 1.5, 3, 6]
+# folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
+# for iff, ff in enumerate(folders): # some fixes
+#     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+# leg_labels = None
+# labels = ['Koct = %.1f'%oo for oo in octknob_vect]
+# cmap = plt.cm.rainbow
+
+octup = -6.
+fname_root = 'ecloud_effect_oct_%.1f'%octup
+# fname_root = None
+folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%octup,
+'/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%octup,
+    ]
+for iff, ff in enumerate(folders): # some fixes
+    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+leg_labels = ['No e-cloud', 'SEY 1.3']
+labels = leg_labels
+cmap = lambda vv: plt.cm.tab10(int(vv*len(folders)))
 
 def extract_info_from_sim_param(fname):
     with open(fname, 'r') as fid:
@@ -124,7 +127,7 @@ for ifol, folder in enumerate(folders):
     axcb = divider.append_axes("right", size=0.3, pad=0.1)
     axhistx.grid(True, linestyle='--', alpha=0.5)
     obstat = sm.nonparametric.KDEUnivariate(ob.qx_i)
-    obstat.fit(bw=5e-4)
+    obstat.fit(bw=10e-4)
     q_axis = np.linspace(Qx_min, Qx_max_cut, 1000)
     axhistx.plot(q_axis, obstat.evaluate(q_axis))
     axhistx.fill_between(x=q_axis, y1=0, y2=obstat.evaluate(q_axis), alpha=0.5)
@@ -135,7 +138,7 @@ for ifol, folder in enumerate(folders):
     axglob.plot(q_axis, obstat.evaluate(q_axis),
             label=lll,
             linewidth=2.,
-            color=plt.cm.rainbow(float(ifol)/float(len(folders))))
+            color=cmap(float(ifol)/float(len(folders))))
     axdistrlist.append(axhistx)
     plt.colorbar(mpbl1, cax=axcb)
 
@@ -170,7 +173,7 @@ for ifol, folder in enumerate(folders):
         ff.suptitle(labels[ifol] + ' - I$_{LOF}$=%.1fA'%machine.i_octupole_focusing)
 
 if leg_labels is None:
-    legtitle = 'I$_LOF$'
+    legtitle = 'I$_{LOF}$'
 else:
     legtitle = None
 axglob.legend(loc='best', title=legtitle)

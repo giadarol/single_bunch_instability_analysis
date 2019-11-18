@@ -53,6 +53,13 @@ folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_sl
 i_start = 0
 i_end = 670
 
+# SEY 1.3 3MV ADT OFF
+label = 'sey_1.3_3MV_ADT_OFF'
+folder = '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_3MV'
+i_start = 0
+i_end = 500
+
+
 plt.close('all')
 
 folder_curr_sim = folder
@@ -63,6 +70,8 @@ ob_slice = mfm.monitorh5list_to_obj(sim_curr_list_slice_ev, key='Slices', flag_t
 w_slices = ob_slice.n_macroparticles_per_slice
 wx = ob_slice.mean_x * w_slices
 wx_filtered = savgol_filter(wx, 21, 3, axis=0)
+
+ylim = np.max(np.abs(wx_filtered[:, i_start:i_end]))
 
 fig = plt.figure(1)
 
@@ -79,8 +88,9 @@ for i_turn in xrange(i_start, i_end):
     mask_filled = ob_slice.n_macroparticles_per_slice[:, i_turn] > 0
     plt.plot(ob_slice.mean_z[mask_filled, i_turn], wx_filtered[mask_filled, i_turn], color='k', lw=2)
     ax.set_xlabel('z [m]')
-    ax.set_ylabel('Position [mm]')
-    ax.set_ylim(-1.5,1.5)
+    ax.set_ylabel('Pickup signal [a.u.]')
+    ax.set_ylim(-ylim, ylim)
+    ax.grid(True, linestyle='--', alpha=0.5)
     fig.suptitle('Turn %d'%i_turn)
     fig.savefig(label + 'frame_%05d.png'%i_turn, dpi=180)
 
