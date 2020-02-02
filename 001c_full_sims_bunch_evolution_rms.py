@@ -82,13 +82,14 @@ from scipy.constants import c as ccc
 #### i_start_list = None
 ########################################### end old stuff
 
-# One point for illustration
-VRF_array = [3]
-labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
-folders_compare = [
-    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
-fname = 'sey1.3_3MV'
-i_start_list = None
+# # One point for illustration
+# VRF_array = [3]
+# labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
+# folders_compare = [
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
+# fname = 'sey1.3_3MV'
+# i_start_list = None
+# cmap = None
 
 # # Volvage scan SEY = 1.3
 # VRF_array = np.arange(3, 8.1, 1)
@@ -97,6 +98,7 @@ i_start_list = None
 #     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_013/injection_450GeV_arcQuad_1.2e11ppb_en_2.5um_1/convergence_studies_inj_arcQuad_scan_slices/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_5e3_eMPs_5e5_length_07_VRF_%.0fMV'%vv for vv in VRF_array]
 # fname = 'sey1.3_vscan'
 # i_start_list = None
+# cmap = None
 
 # # Volvage scan SEY = 1.4
 # VRF_array = np.arange(3, 8.1, 1)
@@ -105,14 +107,65 @@ i_start_list = None
 #     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_scan_intensity_1.2_2.3e11_VRFandBunchLength_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_%.0fMV'%vv for vv in VRF_array]
 # fname = 'sey1.4_vscan'
 # i_start_list = None
+# cmap = None
 
-# # Q' scan
-# Qp_array = np.arange(0., 12.55, 2.5)[-2:]
-# labels = ["Q'=%.1f"%qp for qp in Qp_array]
+# q' scan
+qp_array = np.arange(0., 12.55, 2.5)[-2:]
+labels = ["q'=%.1f"%qp for qp in qp_array]
+folders_compare = [
+     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%(Qp) for Qp in qp_array]
+i_start_list = None
+fname = None
+cmap = None
+
+# # Octupoles scan
+# Qp = 0.0
+# octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6][::-1]
+# labels = ['Koct = %.1f'%oo for oo in octknob_vect]
 # folders_compare = [
-#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_0.0_Qp_xy_%.1f'%qp for qp in Qp_array]
+#     '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus3_3_chromaticity_minus2.5_20/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_%.1f'%(oo, Qp) for oo in octknob_vect]
+# for iff, ff in enumerate(folders_compare): # some fixes
+#     folders_compare[iff] = ff.replace('6.0', '6').replace('-', 'minus')
 # i_start_list = None
-# fname = None
+# fname = 'sey1.4_Qp%.1f_oct_scan'%Qp
+# cmap = plt.cm.rainbow
+
+
+# Volvage scan SEY = 1.3, fixed blen
+VRF_array = np.arange(3, 6.1, 1)
+labels = ['SEY 1.3 - %.1f MV'%vv for vv in VRF_array]
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_intensity_1.2e11_sey_1.3_sigmat_341_ps_scan_VRF_3_8MV/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.3_intensity_1.2e11_VRF_%.0fMV'%vv for vv in VRF_array]
+fname = 'sey1.3_vscan_fixed_blen'
+i_start_list = None
+cmap = None
+
+# Bunch length scan SEY = 1.4, 
+blen_array = [.254, 0.271, 0.289, 0.306, 0.324, 0.341]
+labels = ['SEY 1.4 - %.3f ns'%vv for vv in blen_array]
+folders_compare = [
+    '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_014/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_intensity_1.2_VRF_3MV_scan_BunchLength/simulations_PyPARIS/ArcQuad_T0_x_slices_500_segments_8_MPslice_2500_eMPs_5e5_length_07_sey_1.4_intensity_1.2e11ppb_VRF_3MV_bunch_length_%1.3fns'%vv for vv in blen_array]
+fname = 'sey1.4_scan_blen'
+i_start_list = None
+cmap = None
+
+# Drift
+lvect = [19][::-1]
+labels = ['%.1f'%ll for ll in lvect]
+folders_compare = [
+ '/afs/cern.ch/project/spsecloud/Sim_PyPARIS_019/inj_drift_sey_1.4_intensity_1.2e11ppb_VRF_6MV_yes_initial_kick_intial_edensity_12e11_Dt_ref_1s_slice_200_MPsSlice_5e3_eMPs_1e6_scan_seg_8_32_length_15_20/simulations_PyPARIS/Dt_ref_1s_slice_200_MPsSlice_5e3_eMP_1e6_segment_32_length_%.1f'%ll for ll in lvect]
+
+i_start_list = None
+fname = None
+cmap = plt.cm.rainbow
+
+# # Test 
+# labels = ['linearized_wkick']
+# folders_compare = ['/home/giadarol/Desktop/20200114_ecloud_response/']
+# fname = 'linearized_wkick'
+# i_start_list = None
+# cmap = None
+#######################################################################
 
 flag_naff = False
 
@@ -156,10 +209,18 @@ for ifol, folder in enumerate(folders_compare):
     rms_x = np.sqrt(np.mean((ob_slice.mean_x * w_slices)**2, axis=0))
     mask_zero = ob.epsn_x > 0.
 
-    ax11.plot(ob.mean_x[mask_zero]*1e3, label=labels[ifol])
-    ax12.plot(ob.epsn_x[mask_zero]*1e6)
+#    # TEMPORARY!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    mask_zero[2000:] = False
+
+    if cmap is not None:
+        cc = cmap(float(ifol)/float(len(folders_compare)))
+        kwargs = {'color': cc}
+    else:
+        kwargs = {}
+    ax11.plot(ob.mean_x[mask_zero]*1e3, label=labels[ifol], **kwargs)
+    ax12.plot(ob.epsn_x[mask_zero]*1e6, **kwargs)
     intrabunch_activity = savgol_filter(rms_x[mask_zero], 21, 3)
-    ax13.plot(intrabunch_activity)
+    ax13.plot(intrabunch_activity, **kwargs)
 
     import sys
     sys.path.append('./NAFFlib')
@@ -283,7 +344,12 @@ for ifol, folder in enumerate(folders_compare):
 
     N_traces = 15
     max_intr = np.max(intrabunch_activity)
-    i_start = np.where(intrabunch_activity<0.3*max_intr)[0][-1] - N_traces
+
+    try:
+        i_start = np.where(intrabunch_activity<0.3*max_intr)[0][-1] - N_traces
+    except IndexError:
+        i_start = 0
+
     # i_start = np.sum(mask_zero) - 2*N_traces
     for i_trace in range(i_start, i_start+15):
         wx_trace_filtered = savgol_filter(wx[:,i_trace], 31, 3)

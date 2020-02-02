@@ -15,7 +15,7 @@ from PyPARIS_sim_class import LHC_custom
 
 fname_root = 'sey1.4_4MV_QP0_octscan'
 # fname_root = None
-octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6]
+octknob_vect = [-6, -3, -1.5, 0., 1.5, 3, 6][::-1]
 folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_015/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.4_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%oo for oo in octknob_vect]
 for iff, ff in enumerate(folders): # some fixes
     folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
@@ -43,17 +43,17 @@ cmap = plt.cm.rainbow
 # labels = ['Koct = %.1f'%oo for oo in octknob_vect]
 # cmap = plt.cm.rainbow
 
-octup = -6.
-fname_root = 'ecloud_effect_oct_%.1f'%octup
-# fname_root = None
-folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%octup,
-'/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%octup,
-    ]
-for iff, ff in enumerate(folders): # some fixes
-    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
-leg_labels = ['No e-cloud', 'SEY 1.3']
-labels = leg_labels
-cmap = lambda vv: plt.cm.tab10(int(vv*len(folders)))
+#octup = -6.
+#fname_root = 'ecloud_effect_oct_%.1f'%octup
+## fname_root = None
+#folders = ['/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_VRF_4MV_damper_10turns_scan_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_oct_%.1f_Qp_xy_0.0_FP'%octup,
+#'/afs/cern.ch/project/spsecloud/Sim_PyPARIS_016/inj_arcQuad_T0_seg_8_slices_500_MPsSlice_2500_eMPs_5e5_sey_1.3_VRF_4MV_damper_10turns_scan_intensity_1.2_2.3e11_octupole_minus6_6_chromaticity_minus2.5_20_FP/simulations_PyPARIS/damper_10turns_length_7_VRF_4MV_intensity_1.2e11ppb_oct_%.1f_Qp_xy_0.0_FP'%octup,
+#    ]
+#for iff, ff in enumerate(folders): # some fixes
+#    folders[iff] = ff.replace('6.0', '6').replace('-', 'minus')
+#leg_labels = ['No e-cloud', 'SEY 1.3']
+#labels = leg_labels
+#cmap = lambda vv: plt.cm.tab10(int(vv*len(folders)))
 
 def extract_info_from_sim_param(fname):
     with open(fname, 'r') as fid:
